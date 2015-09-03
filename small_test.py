@@ -1,4 +1,5 @@
 __author__ = '2d Lt Kyle Palko, USAF'
+
 # https://nilearn.github.io/manipulating_visualizing/manipulating_images.html#loading-data
 from nilearn.masking import apply_mask
 from nilearn import plotting as pltt
@@ -56,10 +57,10 @@ print('Completed brain ROI')
 from nilearn.input_data import NiftiLabelsMasker
 masker = NiftiLabelsMasker(labels_img='tt_mask_pad.nii', standardize=True)
 
-time_series = masker.fit_transform(my_data[0])
+time_series = masker.fit_transform(my_data[0])  # size is 19012
 
 import numpy as np
-correlation_matrix = np.corrcoef(time_series.T)
+correlation_matrix = np.corrcoef(time_series.T)  # size is only 97x97
 
 # plot the correlation matrix
 plt.figure(figsize=(10,10))
