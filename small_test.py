@@ -1,4 +1,4 @@
-__author__ = 'kap'
+__author__ = '2d Lt Kyle Palko, USAF'
 # https://nilearn.github.io/manipulating_visualizing/manipulating_images.html#loading-data
 from nilearn.masking import apply_mask
 from nilearn import plotting as pltt
