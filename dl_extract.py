@@ -6,7 +6,7 @@ Date: 29 September 2015
 """
 
 __author__ = '2d Lt Kyle Palko'
-__version__ = 'v0.3'
+__version__ = 'v0.3.1'
 
 from nilearn import datasets
 import glob
@@ -15,7 +15,7 @@ import gzip
 
 path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Test'  # set where the data should be saved
 sub_id = [50004, 50121, 50003]  # sets the subject ids that should be pulled simple 3
-# sub_id = range(50003, 50060]  # calls all of the PITT study subjects
+# sub_id = range(50003, 50060)  # calls all of the PITT study subjects
 pipeline = 'cpac'  # define the pipeline used to preprocess the data
 derivative = 'func_preproc'  # define what data should be pulled
 
