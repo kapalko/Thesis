@@ -57,7 +57,7 @@ from nilearn.input_data import NiftiLabelsMasker
 masker = NiftiLabelsMasker(labels_img='/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/TT/tt_mask_pad.nii'
                            , standardize=True)  # sets the atlas used
 
-for n in glob.glob('*[0-9].nii'):
+for n in sorted(glob.glob('*[0-9].nii')):
     str_id = n[:5]  # sets the current image ID
     masked_data = apply_mask(n, str_id+'_mask.nii')
     time_series = masker.fit_transform(my_data[0])
