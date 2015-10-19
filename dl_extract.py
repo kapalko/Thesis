@@ -4,11 +4,11 @@ working directory.
 
 Version 0.4.0 includes flattening the correlation matrix and writing to a CSV file.
 
-Date: 16 October 2015
+Date: 19 October 2015
 """
 
 __author__ = '2d Lt Kyle Palko'
-__version__ = 'v0.4.0'
+__version__ = 'v0.4.1'
 from nilearn import datasets
 import glob
 import os
@@ -52,13 +52,14 @@ for n in sub_id:
 # at this point, I would just move to the folder, select all, and move to the data folder that you desire to house
 # the data
 
-#from nilearn.masking import apply_mask
+# from nilearn.masking import apply_mask
 from nilearn.input_data import NiftiLabelsMasker
 
 masker = NiftiLabelsMasker(labels_img='/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/TT/tt_mask_pad.nii'
                            , standardize=True)  # sets the atlas used
 atlas = 'TT'  # label which atlas to use
 stud = 'Pitt'
+os.chdir('/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Data/Pitt')
 for n in sorted(glob.glob('*[0-9].nii')):
     str_id = n[:5]  # sets the current image ID
 #    masked_data = apply_mask(n, str_id+'_mask.nii')    
@@ -66,14 +67,14 @@ for n in sorted(glob.glob('*[0-9].nii')):
     
     norm = np.corrcoeff(ts.t)
     
-    ## flatten the correlation matrix
+    # flatten the correlation matrix
     cors = [str_id]
     for i in range(1, np.size(norm, axis=0)):
         for j in range (i+1, np.size(norm, axis=0)):
             cors.append(norm[i,j])
      
-    ## write the correlations to a CSV       
-    with open('{0}{1}.csv'.format(atlas, stud), 'ab') as csvfile:
+    # write the correlations to a CSV
+    with open('{1}_{0}.csv'.format(atlas, stud), 'ab') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',')
         spamwriter.writerow(cors)
     csvfile.close()
