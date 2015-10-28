@@ -3,6 +3,9 @@ Extracts the FNC data from the images (either .gz or ,nii) and puts them into a 
 identify where the labels are ('lab'). You need two CSV files, the subject IDs and the diagnosis file. Sub_ID.csv and
 DX.csv.
 
+Download the csv files here:
+https://www.amazon.com/clouddrive/share/eAMBKfrbBdCRDfmreADaF4oGoZ4ltJGAIWz9I0TtPZT?ref_=cd_ph_share_link_copy
+
 Date: 28 October 15
 """
 
