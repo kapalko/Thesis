@@ -1,3 +1,5 @@
 # Thesis
 
-Working directory for "attempted" thesis work.
+Working directory for thesis work.
+
+Don't judge me, I'm a terrible coder.
