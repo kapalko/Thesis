@@ -1,17 +1,19 @@
 """
 This python file is used to run the experimental tests.
 
-Date: 05 November 15
+Date: 09 November 15
 """
 
 __author__ = '2d Lt Kyle Palko'
-__version__ = 'v0.0.2'
+__version__ = 'v0.0.3'
 
 from random import shuffle
 from random import seed
 import numpy as np
 from sklearn.metrics import confusion_matrix as cm
 from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression as lg
+import csv
 
 
 def tvt(x_data, y_data):
@@ -80,7 +82,7 @@ trn_x, trn_y, val_x, val_y, tst_x, tst_y = tvt(X, Y)
 svmc = BeginClass()
 svmc.lst()
 
-for c in range(1, 301, 5):
+for c in np.linspace(.0001, 3, 30):
     svmr = SVC(C=c, kernel='linear')
     svmc.appen(model=svmr, param=c, trnx=trn_x, trny=trn_y, valx=val_x, valy=val_y)
 
@@ -93,3 +95,27 @@ print c
 print 'Accuracy: {0}'.format(svmc.acc)
 print 'Confusion matrix: '
 print svmc.con
+
+lgc = BeginClass()
+lgc.lst()
+
+for c in np.linspace(1, 30, 30):
+    lgr = lg(penalty='l1', C=c)
+    lgc.appen(model=lgr, param=c, trnx=trn_x, trny=trn_y, valx=val_x, valy=val_y)
+
+lgc.locate()
+c = lgc.param[lgc.plac]
+lgr = lg(penalty='l1', C=c)
+lgc.update(lgr, trnx=trn_x, trny=trn_y, tstx=tst_x, tsty=tst_y)
+coef = lgr.coef_
+print c
+print 'Accuracy: {0}'.format(lgc.acc)
+print 'Confusion matrix: '
+print lgc.con
+
+print(np.count_nonzero(coef))
+for i in range(0,np.size(coef)):
+    with open('coef.csv', 'ab') as csvfile:
+        spamwriter = csv.writer(csvfile, delimiter=',')
+        spamwriter.writerow((coef[0, i], '\n'))
+    csvfile.close()
