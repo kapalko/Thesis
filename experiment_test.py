@@ -1,11 +1,11 @@
 """
 This python file is used to run the experimental tests.
 
-Date: 09 November 15
+Date: 23 November 15
 """
 
 __author__ = '2d Lt Kyle Palko'
-__version__ = 'v0.0.3'
+__version__ = 'v0.0.4'
 
 from random import shuffle
 from random import seed
@@ -15,6 +15,7 @@ from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression as lg
 import csv
 
+d_path = 'csv/TT_prep_cpac_filt_noglobal.csv'
 
 def tvt(x_data, y_data):
 
@@ -65,7 +66,7 @@ class BeginClass():
 
 
 # get the data
-data = np.genfromtxt('csv/tt_cpac_filt_noglobal.csv', delimiter=',')
+data = np.genfromtxt(d_path, delimiter=',')
 # remove rows that have NaN values (not ideal but IDGAF yet)
 data = data[~np.isnan(data).any(axis=1)]  # from stack overflow: https://bit.ly/1QhfcmZ
 Y = np.array([x[1]-1 for x in data])  # y values in the second column
@@ -99,7 +100,7 @@ print svmc.con
 lgc = BeginClass()
 lgc.lst()
 
-for c in np.linspace(1, 30, 30):
+for c in np.linspace(0.0001, 5, 30):
     lgr = lg(penalty='l1', C=c)
     lgc.appen(model=lgr, param=c, trnx=trn_x, trny=trn_y, valx=val_x, valy=val_y)
 
@@ -119,3 +120,4 @@ for i in range(0,np.size(coef)):
         spamwriter = csv.writer(csvfile, delimiter=',')
         spamwriter.writerow((coef[0, i], '\n'))
     csvfile.close()
+
