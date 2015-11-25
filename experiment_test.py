@@ -1,11 +1,11 @@
 """
 This python file is used to run the experimental tests.
 
-Date: 23 November 15
+Date: 24 November 15
 """
 
 __author__ = '2d Lt Kyle Palko'
-__version__ = 'v0.0.5'
+__version__ = 'v0.0.6'
 
 from random import shuffle
 from random import seed
@@ -15,7 +15,9 @@ from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression as lg
 import csv
 
-d_path = 'csv/TT_prep_cpac_filt_noglobal.csv'
+d_path = 'csv/cov_TT_prep_cpac_filt_noglobal.csv'
+num_runs = 5  # number of runs to perform the classifiers
+write_coef = False  # whether or not to output the coefficients in a CSV file
 
 def tvt(x_data, y_data):
 
@@ -78,48 +80,54 @@ del data
 
 # build train test validate sets
 seed(41)
-trn_x, trn_y, val_x, val_y, tst_x, tst_y = tvt(X, Y)
+j = 0
+coef = np.zeros((np.size(X, axis=1), num_runs))
+while j < num_runs:
 
-# svm
-# initialize
-svmc = BeginClass()
-svmc.lst()
+    trn_x, trn_y, val_x, val_y, tst_x, tst_y = tvt(X, Y)
 
-for c in np.linspace(.0001, 3, 30):
-    svmr = SVC(C=c, kernel='linear')
-    svmc.appen(model=svmr, param=c, trnx=trn_x, trny=trn_y, valx=val_x, valy=val_y)
+    # svm
+    # initialize
+    # svmc = BeginClass()
+    # svmc.lst()
+    #
+    # for c in np.linspace(.0001, 3, 30):
+    #     svmr = SVC(C=c, kernel='linear')
+    #     svmc.appen(model=svmr, param=c, trnx=trn_x, trny=trn_y, valx=val_x, valy=val_y)
+    #
+    # svmc.locate()
+    # c = svmc.param[svmc.plac]
+    # svmr = SVC(C=c, kernel='linear')
+    # svmc.update(svmr, trnx=trn_x, trny=trn_y, tstx=tst_x, tsty=tst_y)
+    #
+    # print c
+    # print 'Accuracy: {0}'.format(svmc.acc)
+    # print 'Confusion matrix: '
+    # print svmc.con
 
-svmc.locate()
-c = svmc.param[svmc.plac]
-svmr = SVC(C=c, kernel='linear')
-svmc.update(svmr, trnx=trn_x, trny=trn_y, tstx=tst_x, tsty=tst_y)
+    lgc = BeginClass()
+    lgc.lst()
 
-print c
-print 'Accuracy: {0}'.format(svmc.acc)
-print 'Confusion matrix: '
-print svmc.con
+    for c in np.linspace(0.0001, 5, 30):
+        lgr = lg(penalty='l1', C=c)
+        lgc.appen(model=lgr, param=c, trnx=trn_x, trny=trn_y, valx=val_x, valy=val_y)
 
-lgc = BeginClass()
-lgc.lst()
-
-for c in np.linspace(0.0001, 5, 30):
+    lgc.locate()
+    c = lgc.param[lgc.plac]
     lgr = lg(penalty='l1', C=c)
-    lgc.appen(model=lgr, param=c, trnx=trn_x, trny=trn_y, valx=val_x, valy=val_y)
+    lgc.update(lgr, trnx=trn_x, trny=trn_y, tstx=tst_x, tsty=tst_y)
+    coef[:, j] = lgr.coef_
+    print c
+    print 'Accuracy: {0}'.format(lgc.acc)
+    print 'Confusion matrix: '
+    print lgc.con
+    print(np.count_nonzero(coef[:, j]))
+    j += 1
 
-lgc.locate()
-c = lgc.param[lgc.plac]
-lgr = lg(penalty='l1', C=c)
-lgc.update(lgr, trnx=trn_x, trny=trn_y, tstx=tst_x, tsty=tst_y)
-coef = lgr.coef_
-print c
-print 'Accuracy: {0}'.format(lgc.acc)
-print 'Confusion matrix: '
-print lgc.con
 
-print(np.count_nonzero(coef))
-for i in range(0,np.size(coef)):
-    with open('coef.csv', 'ab') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=',')
-        spamwriter.writerow((coef[0, i], '\n'))
-    csvfile.close()
-
+if write_coef:
+    for i in range(0, np.size(coef, axis=0)):
+        with open('coef.csv'.format(j), 'ab') as csvfile:
+            spamwriter = csv.writer(csvfile, delimiter=',')
+            spamwriter.writerow((coef[i, :]))
+        csvfile.close()
