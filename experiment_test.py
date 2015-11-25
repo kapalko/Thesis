@@ -1,7 +1,7 @@
 """
 This python file is used to run the experimental tests.
 
-Date: 24 November 15
+Date: 25 November 15
 """
 from random import shuffle
 from random import seed
@@ -13,12 +13,12 @@ import csv
 from sklearn.decomposition import PCA
 
 __author__ = '2d Lt Kyle Palko'
-__version__ = 'v0.0.7'
+__version__ = 'v0.0.8'
 
 d_path = 'csv/TT_prep_cpac_filt_noglobal.csv'
-num_runs = 1  # number of runs to perform the classifiers
+num_runs = 100  # number of runs to perform the classifiers
 write_coef = False  # whether or not to output the coefficients in a CSV file
-
+write_results = True
 
 def tvt(x_data, y_data):
 
@@ -83,6 +83,7 @@ del data
 seed(41)
 j = 0
 coef = np.zeros((np.size(X, axis=1), num_runs))
+acc = np.zeros((num_runs, 2))
 while j < num_runs:
 
     trn_x, trn_y, val_x, val_y, tst_x, tst_y = tvt(X, Y)
@@ -128,7 +129,7 @@ while j < num_runs:
     print 'Confusion matrix: '
     print lgc.con
     print(np.count_nonzero(coef[:, j]))
-    j += 1
+
 
     lgc = BeginClass()
     lgc.lst()
@@ -141,17 +142,26 @@ while j < num_runs:
     lgr = lg(penalty='l1', C=c)
     lgc.update(lgr, trnx=rtrn, trny=trn_y, tstx=rtst, tsty=tst_y)
     rcoef = lgr.coef_
+    acc[j, 0] = lgc.acc
+    acc[j, 1] = np.count_nonzero(rcoef)
     print 'transformed'
     print c
     print 'Accuracy: {0}'.format(lgc.acc)
     print 'Confusion matrix: '
     print lgc.con
     print(np.count_nonzero(rcoef))
-
+    j += 1
 
 if write_coef:
     for i in range(0, np.size(coef, axis=0)):
         with open('coef.csv'.format(j), 'ab') as csvfile:
             spamwriter = csv.writer(csvfile, delimiter=',')
             spamwriter.writerow((coef[i, :]))
+        csvfile.close()
+
+if write_results:
+    for i in range(0, num_runs):
+        with open('exp_results.csv'.format(j), 'ab') as csvfile:
+            spamwriter = csv.writer(csvfile, delimiter=',')
+            spamwriter.writerow((acc[i, :]))
         csvfile.close()
