@@ -1,5 +1,8 @@
-__author__ = '2d Lt Kyle Palko'
+"""
+This python file is used to download the time series data and convert them into a FNC data.
 
+Date: 24 November 15
+"""
 import glob
 import os
 import gzip
@@ -7,6 +10,9 @@ import csv
 import numpy as np
 from nilearn.input_data import NiftiLabelsMasker
 from nilearn import datasets
+
+__author__ = '2d Lt Kyle Palko'
+__version__ = 'v0.1'
 
 path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Test'  # set where the data should be saved
 pipeline = 'cpac'  # define the pipeline used to preprocess the data
