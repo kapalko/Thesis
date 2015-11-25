@@ -11,7 +11,7 @@ X = randn(m,n)
 j = 0
 while j < n:
     X[:,j] = X[:,j]/norm(X[:,j],2)
-    j = j + 1
+    j += 1
 
 # sets up max runs and max sparsity
 maxRuns = 10
