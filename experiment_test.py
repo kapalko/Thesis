@@ -11,12 +11,14 @@ from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression as lg
 import csv
 from sklearn.decomposition import PCA
+from sklearn.ensemble import AdaBoostClassifier as ADA
 
 __author__ = '2d Lt Kyle Palko'
 __version__ = 'v0.0.8'
 
-d_path = 'csv/TT_prep_cpac_filt_noglobal.csv'
-num_runs = 100  # number of runs to perform the classifiers
+# d_path = 'csv/dos160_prep_cpac_filt_noglobal.csv'
+d_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'
+num_runs = 10  # number of runs to perform the classifiers
 write_coef = False  # whether or not to output the coefficients in a CSV file
 write_results = True
 
@@ -114,13 +116,16 @@ while j < num_runs:
     lgc = BeginClass()
     lgc.lst()
 
-    for c in np.linspace(0.0001, 5, 30):
-        lgr = lg(penalty='l1', C=c)
+    # for c in np.linspace(0.0001, 5, 30):
+        # lgr = lg(penalty='l1', C=c)
+    for c in range(1, 100, 5):
+        lgr = ADA(n_estimators=c)
         lgc.appen(model=lgr, param=c, trnx=trn_x, trny=trn_y, valx=val_x, valy=val_y)
 
     lgc.locate()
     c = lgc.param[lgc.plac]
-    lgr = lg(penalty='l1', C=c)
+    # lgr = lg(penalty='l1', C=c)
+    lgr = ADA(n_estimators=c)
     lgc.update(lgr, trnx=trn_x, trny=trn_y, tstx=tst_x, tsty=tst_y)
     coef[:, j] = lgr.coef_
     print 'Untransformed'
@@ -133,13 +138,16 @@ while j < num_runs:
 
     lgc = BeginClass()
     lgc.lst()
-    for c in np.linspace(0.0001, 5, 30):
-        lgr = lg(penalty='l1', C=c)
+    # for c in np.linspace(0.0001, 5, 30):
+    #     lgr = lg(penalty='l1', C=c)
+    for c in range(1, 100, 5):
+        lgr = ADA(n_estimators=c)
         lgc.appen(model=lgr, param=c, trnx=rtrn, trny=trn_y, valx=rval, valy=val_y)
 
     lgc.locate()
     c = lgc.param[lgc.plac]
-    lgr = lg(penalty='l1', C=c)
+    # lgr = lg(penalty='l1', C=c)
+    lgr = ADA(n_estimators=c)
     lgc.update(lgr, trnx=rtrn, trny=trn_y, tstx=rtst, tsty=tst_y)
     rcoef = lgr.coef_
     acc[j, 0] = lgc.acc

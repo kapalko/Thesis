@@ -26,9 +26,10 @@ datasets.fetch_abide_pcp(data_dir=path, pipeline=pipe, band_pass_filtering=True,
 # path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/'  # working directory
 filt = 'filt_noglobal'
 # stud = 'Test/ABIDE_pcp/{0}/{1}/'.format(pipe, filt)  # location that download happened
-stud = 'ABIDE_pcp/{0}/{1}/'.format(pipe, filt)
+stud = '/ABIDE_pcp/{0}/{1}/'.format(pipe, filt)
 # stud = 'Data/'
-lab = path + 'Label/'  # location of CSV files for labeling
+# lab = path + 'Label/'  # location of CSV files for labeling
+lab = '/home/kap/Thesis/Data/Label/'
 mask_name = 'dos160_prep'
 
 # build two lists of strings from CSV files to use to match the subjects and their diagnosis
