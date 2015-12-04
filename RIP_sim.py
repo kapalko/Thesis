@@ -11,9 +11,11 @@ __version__ = 'v0.1.0'
 import numpy as np
 from sklearn.preprocessing import normalize as norm
 from matplotlib import pyplot as plt
+from sklearn.preprocessing import StandardScaler as ss
 
 # constants
-csv_path = 'tt_cpac_filt_noglobal.csv'
+# csv_path = 'tt_cpac_filt_noglobal.csv'  # desktop
+csv_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'  # laptop
 num_runs = 10000
 max_s = 2000
 run = True
@@ -33,7 +35,8 @@ Y = np.array([x[1]-1 for x in data])  # y values in the second column
 X = np.array([x[2:] for x in data])
 del x
 del data
-x_norm = norm(X, axis=0)
+stan = ss()
+x_norm = norm(stan.fit_transform(X.astype('float')), axis=0)
 n_feat = np.size(X, axis=1)
 
 results = np.zeros((num_runs, max_s))
