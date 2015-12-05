@@ -2,29 +2,32 @@
 This file is used to perform the Reverse Isometry Property simulations in an attempt to find the probability that
 the RIP condition holds for the reduced model.
 
-Date: 17 November 15
+Date: 3 December 15
 """
 
 __author__ = '2d Lt Kyle Palko'
-__version__ = 'v0.1.0'
+__version__ = 'v0.1.1'
 
 import numpy as np
 from sklearn.preprocessing import normalize as norm
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import StandardScaler as ss
 
+# options
+test_runs = True
+
 # constants
-# csv_path = 'tt_cpac_filt_noglobal.csv'  # desktop
-csv_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'  # laptop
-num_runs = 10000
-max_s = 2000
+csv_path = 'csv/TT_prep_cpac_filt_noglobal.csv'  # desktop
+# csv_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'  # laptop
+num_runs = 1000
+max_s = 100
 run = True
 b = 1
 
 def delt(beta, vect):
     # use optimization to find the minimum positive delta with constraints
     # (1-d)||b||_2^2 <= ||Xb||_2^2 <= (1+d)||b||_2^2
-    return np.abs(np.sum(np.square(vect*beta))-1)
+    return np.abs(np.sum(np.square(np.dot(vect, beta)))-1)
 
 
 # get the data
@@ -38,6 +41,13 @@ del data
 stan = ss()
 x_norm = norm(stan.fit_transform(X.astype('float')), axis=0)
 n_feat = np.size(X, axis=1)
+n_row = np.size(X, axis=0)
+del X
+del Y
+
+# test instances
+if test_runs:
+    x_norm = norm(stan.fit_transform(np.random.normal(size=(n_row,  n_feat))), axis=0)
 
 results = np.zeros((num_runs, max_s))
 d_quant = np.zeros((max_s, 4))
@@ -55,13 +65,19 @@ while run and b <= max_s:
     d_quant[b-1, 1] = np.percentile(results[:, b-1], 10)
     d_quant[b-1, 2] = np.percentile(results[:, b-1], 50)
     d_quant[b-1, 3] = np.percentile(results[:, b-1], 90)
+
+    # if d_quant[b-1, 1] > 1:
+    #     run = False
+    #     print('Delta over 1 for 10% quantile')
     b += 1
+
+
 fig = plt.figure()
 plt.plot(d_quant[:, 0], d_quant[:, 1], c='r', label='.1 Quantile')
 plt.plot(d_quant[:, 0], d_quant[:, 2], c='g', label='.5 Quantile')
 plt.plot(d_quant[:, 0], d_quant[:, 3], c='b', label='.9 Quantile')
-plt.legend(loc='lower left')
-plt.xlabel('Beta')
+plt.legend(loc='lower right')
+plt.xlabel('Num Beta')
 plt.ylabel('delta')
 plt.savefig('test_plot.png')
 plt.close()
