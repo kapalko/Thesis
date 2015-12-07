@@ -19,7 +19,7 @@ test_runs = True
 # constants
 csv_path = 'csv/TT_prep_cpac_filt_noglobal.csv'  # desktop
 # csv_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'  # laptop
-num_runs = 1000
+num_runs = 10000
 max_s = 100
 run = True
 b = 1
@@ -66,19 +66,19 @@ while run and b <= max_s:
     d_quant[b-1, 2] = np.percentile(results[:, b-1], 50)
     d_quant[b-1, 3] = np.percentile(results[:, b-1], 90)
 
-    # if d_quant[b-1, 1] > 1:
-    #     run = False
-    #     print('Delta over 1 for 10% quantile')
+    if d_quant[b-1, 1] > 1:
+        run = False
+        print('Delta over 1 for 10% quantile')
     b += 1
 
-
 fig = plt.figure()
-plt.plot(d_quant[:, 0], d_quant[:, 1], c='r', label='.1 Quantile')
-plt.plot(d_quant[:, 0], d_quant[:, 2], c='g', label='.5 Quantile')
-plt.plot(d_quant[:, 0], d_quant[:, 3], c='b', label='.9 Quantile')
+plt.plot(d_quant[:b-2, 0], d_quant[:b-2, 1], c='r', label='.1 Quantile')
+plt.plot(d_quant[:b-2, 0], d_quant[:b-2, 2], c='g', label='.5 Quantile')
+plt.plot(d_quant[:b-2, 0], d_quant[:b-2, 3], c='b', label='.9 Quantile')
 plt.legend(loc='lower right')
 plt.xlabel('Num Beta')
 plt.ylabel('delta')
+plt.title('RIP Simulations with Simulated Data')
 plt.savefig('test_plot.png')
 plt.close()
 print('End')
