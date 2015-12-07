@@ -1,14 +1,18 @@
 """
 This python file is used to compare the correlations of the FNC data.
 
-Date: 05 December 15
+Date: 06 December 15
 """
 import numpy as np
 from matplotlib import pyplot as plt
 import csv
 import os
 
-d_path = '/home/kap/Thesis/Data/csv/TT_prep_cpac_filt_noglobal.csv'
+# constants
+dpi = 1000  # pixels per inch (change for laptop or slower computers)
+
+# d_path = '/home/kap/Thesis/Data/csv/TT_prep_cpac_filt_noglobal.csv'  # laptop
+d_path = 'csv/TT_prep_cpac_filt_noglobal.csv'  # desktop
 
 # get the data
 data = np.genfromtxt(d_path, delimiter=',')
@@ -23,10 +27,12 @@ del data
 
 corr = np.corrcoef(X.T)
 
-os.chdir('/home/kap/Thesis/Data/csv/')
+# os.chdir('/home/kap/Thesis/Data/csv/')
+
 plt.figure(figsize=(10, 10))
 plt.imshow(corr, interpolation='nearest')
-plt.savefig('FNC_Correlation.png', dpi=200)
+plt.title('Correlations among FNC values')
+plt.savefig('FNC_Correlation.png', dpi=dpi)
 plt.close()
 
 
