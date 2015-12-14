@@ -19,9 +19,13 @@ __version__ = 'v0.0.9'
 d_path = 'csv/TT_prep_cpac_filt_noglobal.csv'
 # d_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'
 num_runs = 1000  # number of runs to perform the classifiers
-write_coef = False  # whether or not to output the coefficients in a CSV file
+write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-do_pca = False
+result_title = 'TT_pca'
+
+# PCA options
+do_pca = True
+n_pca = .9  # % of variance to keep
 
 
 def tvt(x_data, y_data):
@@ -86,7 +90,11 @@ del data
 seed(41)
 j = 0
 coef = np.zeros((np.size(X, axis=1), num_runs))
-acc = np.zeros((num_runs, 2))
+if do_pca:
+    acc = np.zeros((num_runs, 4))
+else:
+    acc = np.zeros((num_runs, 3))
+
 while j < num_runs:
 
     trn_x, trn_y, val_x, val_y, tst_x, tst_y = tvt(X, Y)
@@ -109,6 +117,12 @@ while j < num_runs:
     # print 'Accuracy: {0}'.format(svmc.acc)
     # print 'Confusion matrix: '
     # print svmc.con
+    if do_pca:
+        r = PCA(n_components=.9)
+        trn_x = r.fit_transform(trn_x)
+        val_x = r.transform(val_x)
+        tst_x = r.transform(tst_x)
+        acc[j, 3] = np.size(trn_x, axis=1)
 
     lgc = BeginClass()
     lgc.lst()
@@ -124,54 +138,32 @@ while j < num_runs:
     lgr = lg(penalty='l1', C=c)
     # lgr = ADA(n_estimators=c)
     lgc.update(lgr, trnx=trn_x, trny=trn_y, tstx=tst_x, tsty=tst_y)
-    coef[:, j] = lgr.coef_
+
+    coef[:np.size(lgr.coef_), j] = lgr.coef_
+    acc[j, 0] = lgc.acc
+    acc[j, 1] = np.count_nonzero(coef[:, j])
+    acc[j, 2] = c
+
     print 'Untransformed'
-    print c
+    print 'c = {0}'.format(c)
     print 'Accuracy: {0}'.format(lgc.acc)
     print 'Confusion matrix: '
     print lgc.con
     print(np.count_nonzero(coef[:, j]))
+    print j
 
-    if do_pca:
-        r = PCA(n_components=.9)
-        rtrn = r.fit_transform(trn_x)
-        rval = r.transform(val_x)
-        rtst = r.transform(tst_x)
-
-        lgc = BeginClass()
-        lgc.lst()
-        for c in np.linspace(0.0001, 5, 30):
-            lgr = lg(penalty='l1', C=c)
-        # for c in range(1, 100, 5):
-        #     lgr = ADA(n_estimators=c)
-            lgc.appen(model=lgr, param=c, trnx=rtrn, trny=trn_y, valx=rval, valy=val_y)
-
-        lgc.locate()
-        c = lgc.param[lgc.plac]
-        lgr = lg(penalty='l1', C=c)
-        # lgr = ADA(n_estimators=c)
-        lgc.update(lgr, trnx=rtrn, trny=trn_y, tstx=rtst, tsty=tst_y)
-        rcoef = lgr.coef_
-        acc[j, 0] = lgc.acc
-        acc[j, 1] = np.count_nonzero(rcoef)
-        print 'transformed'
-        print c
-        print 'Accuracy: {0}'.format(lgc.acc)
-        print 'Confusion matrix: '
-        print lgc.con
-        print(np.count_nonzero(rcoef))
     j += 1
 
 if write_coef:
     for i in range(0, np.size(coef, axis=0)):
-        with open('coef_results.csv', 'ab') as csvfile:
+        with open('{0}_coef_results.csv'.format(result_title), 'ab') as csvfile:
             spamwriter = csv.writer(csvfile, delimiter=',')
             spamwriter.writerow((coef[i, :]))
         csvfile.close()
 
 if write_results:
     for i in range(0, num_runs):
-        with open('exp_results.csv', 'ab') as csvfile:
+        with open('{0}_exp_results.csv'.format(result_title), 'ab') as csvfile:
             spamwriter = csv.writer(csvfile, delimiter=',')
             spamwriter.writerow((acc[i, :]))
         csvfile.close()
