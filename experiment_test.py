@@ -1,7 +1,7 @@
 """
 This python file is used to run the experimental tests.
 
-Date: 09 December 15
+Date: 18 December 15
 """
 from random import shuffle
 from random import seed
@@ -14,18 +14,22 @@ from sklearn.decomposition import PCA
 # from sklearn.ensemble import AdaBoostClassifier as ADA
 
 __author__ = '2d Lt Kyle Palko'
-__version__ = 'v0.0.9'
+__version__ = 'v0.0.10'
 
 d_path = 'csv/TT_prep_cpac_filt_noglobal.csv'
 # d_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'
-num_runs = 1000  # number of runs to perform the classifiers
+num_runs = 10  # number of runs to perform the classifiers
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'TT_pca'
+result_title = 'TT_full'
 
 # PCA options
-do_pca = True
+do_pca = False
 n_pca = .9  # % of variance to keep
+
+# 2 degree factorial model with interactions
+# make sure you have lots of memory for this one
+do_full = True
 
 
 def tvt(x_data, y_data):
@@ -85,6 +89,15 @@ data = sorted(data, key=lambda x: x[0])
 Y = np.array([x[1]-1 for x in data])  # y values in the second column
 X = np.array([x[2:] for x in data])
 del data
+
+if do_full:
+    interact = []  # initialize
+    for i in range(0, np.size(X, axis=1)-1):
+        for j in range(i+1, np.size(X, axis=1)):
+            interact = np.append(interact, (X[:, i]*X[:, j]))
+
+    X = np.append(X, np.square(X))  # add the squares
+    X = np.append(X, interact)
 
 # build train test validate sets
 seed(41)
