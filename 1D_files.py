@@ -14,23 +14,24 @@ from nilearn import datasets
 __author__ = '2d Lt Kyle Palko'
 __version__ = 'v0.1'
 
-# path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Test'  # set where the data should be saved
-path = '/home/kap/Thesis/Data/DL'
+path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/C200'  # set where the data should be saved
+# path = '/home/kap/Thesis/Data/DL'
 pipe = 'cpac'  # define the pipeline used to preprocess the data
-derivative = 'rois_dosenbach160'  # define what data should be pulled
+derivative = 'rois_cc200'  # define what data should be pulled
 
 datasets.fetch_abide_pcp(data_dir=path, pipeline=pipe, band_pass_filtering=True, global_signal_regression=False,
                          derivatives=[derivative])
 
 # local variables and paths #
-# path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/'  # working directory
+path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/'  # working directory
 filt = 'filt_noglobal'
-# stud = 'Test/ABIDE_pcp/{0}/{1}/'.format(pipe, filt)  # location that download happened
-stud = '/ABIDE_pcp/{0}/{1}/'.format(pipe, filt)
+stud = 'C200/ABIDE_pcp/{0}/{1}/'.format(pipe, filt)  # location that download happenedto
+# stud = '/ABIDE_pcp/{0}/{1}/'.format(pipe, filt)
 # stud = 'Data/'
 # lab = path + 'Label/'  # location of CSV files for labeling
-lab = '/home/kap/Thesis/Data/Label/'
-mask_name = 'dos160_prep'
+lab = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/C200/'
+# lab = '/home/kap/Thesis/Data/Label/'
+mask_name = 'cc200_prep'
 
 # build two lists of strings from CSV files to use to match the subjects and their diagnosis
 idlab = []  # subject IDs
