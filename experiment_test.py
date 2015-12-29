@@ -1,7 +1,7 @@
 """
 This python file is used to run the experimental tests.
 
-Date: 18 December 15
+Date: 28 December 15
 """
 from random import shuffle
 from random import seed
@@ -12,11 +12,13 @@ from sklearn.linear_model import LogisticRegression as lg
 import csv
 from sklearn.decomposition import PCA
 # from sklearn.ensemble import AdaBoostClassifier as ADA
+import time
 
+start_time = time.time()
 __author__ = '2d Lt Kyle Palko'
-__version__ = 'v0.0.10'
+__version__ = 'v0.0.11'
 
-d_path = 'csv/TT_prep_cpac_filt_noglobal.csv'
+d_path = 'csv/TT_prep_cpac_filt_noglobal.csv'  # desktop
 # d_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'
 num_runs = 10  # number of runs to perform the classifiers
 write_coef = True  # whether or not to output the coefficients in a CSV file
@@ -91,13 +93,17 @@ X = np.array([x[2:] for x in data])
 del data
 
 if do_full:
-    interact = []  # initialize
+    c = 0
+    interact = np.zeros((np.size(X, axis=0), (np.size(X, axis=1)*(np.size(X, axis=1)-1))/2))  # initialize (roughly 8,731,396,800 cells)
     for i in range(0, np.size(X, axis=1)-1):
+        print i
         for j in range(i+1, np.size(X, axis=1)):
-            interact = np.append(interact, (X[:, i]*X[:, j]))
+            interact[:, c] = (X[:, i]*X[:, j])
+            c += 1
 
     X = np.append(X, np.square(X))  # add the squares
     X = np.append(X, interact)
+    print 'Completed Full Model'
 
 # build train test validate sets
 seed(41)
@@ -180,3 +186,6 @@ if write_results:
             spamwriter = csv.writer(csvfile, delimiter=',')
             spamwriter.writerow((acc[i, :]))
         csvfile.close()
+
+end_time = time.time()-start_time  # seconds
+print 'Run time (hours): {0}'.format(end_time/3600)
