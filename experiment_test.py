@@ -3,7 +3,7 @@ This python file is used to run the experimental tests.
 
 There are several options to use
 
-Date: 03 January 2016
+Date: 04 January 2016
 """
 from random import shuffle
 from random import seed
@@ -18,14 +18,14 @@ import time
 
 start_time = time.time()
 __author__ = '2d Lt Kyle Palko'
-__version__ = 'v0.1.0'
+__version__ = 'v0.1.1'
 
 d_path = 'csv/TT_prep_cpac_filt_noglobal.csv'  # desktop
 # d_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'
 num_runs = 1000  # number of runs to perform the classifiers
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'TT_noisy'
+result_title = 'TT_noisy1'
 
 # PCA options
 do_pca = False
@@ -112,12 +112,12 @@ if do_full:
 
 
 if do_noise:
-    from sklearn.preprocessing import normalize as norm
     from sklearn.preprocessing import MinMaxScaler as ss
     stan = ss(feature_range=(-1, 1))
 
-    x_norm = stan.fit_transform(np.random.randn(np.size(X, axis=0), 1))
+    x_norm = np.random.randn(np.size(X, axis=0), 1)
     X = np.column_stack((X, x_norm))
+    X = stan.fit_transform(X)
 
 # build train test validate sets
 seed(41)
