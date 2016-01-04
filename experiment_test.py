@@ -1,7 +1,9 @@
 """
 This python file is used to run the experimental tests.
 
-Date: 28 December 15
+There are several options to use
+
+Date: 03 January 2016
 """
 from random import shuffle
 from random import seed
@@ -16,14 +18,14 @@ import time
 
 start_time = time.time()
 __author__ = '2d Lt Kyle Palko'
-__version__ = 'v0.0.11'
+__version__ = 'v0.1.0'
 
 d_path = 'csv/TT_prep_cpac_filt_noglobal.csv'  # desktop
 # d_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'
-num_runs = 10  # number of runs to perform the classifiers
+num_runs = 1000  # number of runs to perform the classifiers
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'TT_full'
+result_title = 'TT_noisy'
 
 # PCA options
 do_pca = False
@@ -31,7 +33,10 @@ n_pca = .9  # % of variance to keep
 
 # 2 degree factorial model with interactions
 # make sure you have lots of memory for this one
-do_full = True
+do_full = False
+
+# create a noise variable
+do_noise = True
 
 
 def tvt(x_data, y_data):
@@ -85,7 +90,7 @@ class BeginClass():
 # get the data
 data = np.genfromtxt(d_path, delimiter=',')
 
-# remove rows that have NaN values (not ideal but IDGAF yet)
+# remove rows that have NaN values (not ideal)
 data = data[~np.isnan(data).any(axis=1)]  # from stack overflow: https://bit.ly/1QhfcmZ
 data = sorted(data, key=lambda x: x[0])
 Y = np.array([x[1]-1 for x in data])  # y values in the second column
@@ -104,6 +109,15 @@ if do_full:
     X = np.append(X, np.square(X))  # add the squares
     X = np.append(X, interact)
     print 'Completed Full Model'
+
+
+if do_noise:
+    from sklearn.preprocessing import normalize as norm
+    from sklearn.preprocessing import MinMaxScaler as ss
+    stan = ss(feature_range=(-1, 1))
+
+    x_norm = stan.fit_transform(np.random.randn(np.size(X, axis=0), 1))
+    X = np.column_stack((X, x_norm))
 
 # build train test validate sets
 seed(41)
