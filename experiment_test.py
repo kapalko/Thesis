@@ -33,7 +33,8 @@ n_pca = .9  # % of variance to keep
 
 # 2 degree factorial model with interactions
 # make sure you have lots of memory for this one
-do_full = False
+do_full = True
+full_path = 'Results/tt_full.csv'
 
 # create a noise variable
 do_noise = True
@@ -99,11 +100,19 @@ del data
 
 if do_full:
     c = 0
-    interact = np.zeros((np.size(X, axis=0), (np.size(X, axis=1)*(np.size(X, axis=1)-1))/2))  # initialize (roughly 8,731,396,800 cells)
-    for i in range(0, np.size(X, axis=1)-1):
-        print i
-        for j in range(i+1, np.size(X, axis=1)):
-            interact[:, c] = (X[:, i]*X[:, j])
+    # interact = np.zeros((np.size(X, axis=0), (np.size(X, axis=1)*(np.size(X, axis=1)-1))/2))  # initialize (roughly 8,731,396,800 cells)
+    # for i in range(0, np.size(X, axis=1)-1):
+    #     print i
+    #     for j in range(i+1, np.size(X, axis=1)):
+    #         interact[:, c] = (X[:, i]*X[:, j])
+    #         c += 1
+
+    col = np.genfromtxt(full_path, delimiter=',')
+    col = sorted(col)
+    interact = np.zeros((np.size(X, axis=0), (np.size(col)*(np.size(col)-1))/2))
+    for i in range(0, np.size(col)-1):
+        for j in range(i+1, np.size(col)):
+            interact[:, c] = X[:, col(i)]*X[:, col(j)]
             c += 1
 
     X = np.append(X, np.square(X))  # add the squares
@@ -120,7 +129,7 @@ if do_noise:
     X = stan.fit_transform(X)
 
 # build train test validate sets
-seed(41)
+# seed(41)
 j = 0
 coef = np.zeros((np.size(X, axis=1), num_runs))
 if do_pca:
