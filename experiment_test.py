@@ -1,9 +1,23 @@
 """
-This python file is used to run the experimental tests.
+This python file is used to run the experimental tests. There are several options available for the user. Please look at
+the initial variables to change what you want.
 
-There are several options to use
+This file perfoms several iterations of Cross Validation to select the best hyperparameter for use in Logistic
+Regression. The classification method can be easily changed by the user with just a few changes in code.
 
-Date: 04 January 2016
+Parameters:
+    d_path: The path to the FNC values
+    num_runs: number of experimental runs, each with a different random TVT allocation
+    write_coef: Select if you would like to keep the coefficient values in a CSV
+    write_results: Select if you would like to keep the results in a CSV
+    result_title: The name of the resulting CSVs
+    do_pca: Whether or not to perform PCA on the data before classifying
+    n_pca: If integer, the number of columns to keep. If (0,1), the percentage of variance to keep.
+    do_full: Create a full, 2 degree factorial model with interactions (only uses a select number of columns).
+    full_path: The path to a csv that contains the important columns to use in full model.
+    do_noise: If true, a Gaussian normal vector is added to the data to compare how often it is selected.
+
+Date: 05 January 2016
 """
 from random import shuffle
 from random import seed
@@ -18,14 +32,16 @@ import time
 
 start_time = time.time()
 __author__ = '2d Lt Kyle Palko'
-__version__ = 'v0.1.1'
+__version__ = 'v0.1.2'
 
 d_path = 'csv/TT_prep_cpac_filt_noglobal.csv'  # desktop
 # d_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'
 num_runs = 1000  # number of runs to perform the classifiers
+
+# Write results
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'TT_noisy1'
+result_title = 'TT_full'
 
 # PCA options
 do_pca = False
@@ -37,7 +53,7 @@ do_full = True
 full_path = 'Results/tt_full.csv'
 
 # create a noise variable
-do_noise = True
+do_noise = False
 
 
 def tvt(x_data, y_data):
@@ -112,11 +128,11 @@ if do_full:
     interact = np.zeros((np.size(X, axis=0), (np.size(col)*(np.size(col)-1))/2))
     for i in range(0, np.size(col)-1):
         for j in range(i+1, np.size(col)):
-            interact[:, c] = X[:, col(i)]*X[:, col(j)]
+            interact[:, c] = X[:, col[i]]*X[:, col[j]]
             c += 1
 
-    X = np.append(X, np.square(X))  # add the squares
-    X = np.append(X, interact)
+    X = np.append(X, np.square(X), axis=1)  # add the squares
+    X = np.append(X, interact, axis=1)
     print 'Completed Full Model'
 
 
@@ -141,24 +157,6 @@ while j < num_runs:
 
     trn_x, trn_y, val_x, val_y, tst_x, tst_y = tvt(X, Y)
 
-    # svm
-    # initialize
-    # svmc = BeginClass()
-    # svmc.lst()
-    #
-    # for c in np.linspace(.0001, 3, 30):
-    #     svmr = SVC(C=c, kernel='linear')
-    #     svmc.appen(model=svmr, param=c, trnx=trn_x, trny=trn_y, valx=val_x, valy=val_y)
-    #
-    # svmc.locate()
-    # c = svmc.param[svmc.plac]
-    # svmr = SVC(C=c, kernel='linear')
-    # svmc.update(svmr, trnx=trn_x, trny=trn_y, tstx=tst_x, tsty=tst_y)
-    #
-    # print c
-    # print 'Accuracy: {0}'.format(svmc.acc)
-    # print 'Confusion matrix: '
-    # print svmc.con
     if do_pca:
         r = PCA(n_components=.9)
         trn_x = r.fit_transform(trn_x)
@@ -186,11 +184,7 @@ while j < num_runs:
     acc[j, 1] = np.count_nonzero(coef[:, j])
     acc[j, 2] = c
 
-    print 'Untransformed'
-    print 'c = {0}'.format(c)
     print 'Accuracy: {0}'.format(lgc.acc)
-    print 'Confusion matrix: '
-    print lgc.con
     print(np.count_nonzero(coef[:, j]))
     print j
 
