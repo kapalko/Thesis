@@ -41,7 +41,7 @@ num_runs = 1000  # number of runs to perform the classifiers
 # Write results
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'TT_full'
+result_title = 'TT_param'
 
 # PCA options
 do_pca = False
@@ -49,7 +49,7 @@ n_pca = .9  # % of variance to keep
 
 # 2 degree factorial model with interactions
 # make sure you have lots of memory for this one
-do_full = True
+do_full = False
 full_path = 'Results/tt_full.csv'
 
 # create a noise variable
@@ -158,7 +158,7 @@ while j < num_runs:
     trn_x, trn_y, val_x, val_y, tst_x, tst_y = tvt(X, Y)
 
     if do_pca:
-        r = PCA(n_components=.9)
+        r = PCA(n_components=n_pca)
         trn_x = r.fit_transform(trn_x)
         val_x = r.transform(val_x)
         tst_x = r.transform(tst_x)
@@ -167,7 +167,7 @@ while j < num_runs:
     lgc = BeginClass()
     lgc.lst()
 
-    for c in np.linspace(0.0001, 4, 30):
+    for c in np.linspace(0.1, 2, 30):
         lgr = lg(penalty='l1', C=c)
     # for c in range(1, 100, 5):
     #     lgr = ADA(n_estimators=c)
@@ -185,6 +185,7 @@ while j < num_runs:
     acc[j, 2] = c
 
     print 'Accuracy: {0}'.format(lgc.acc)
+    print 'c={0}'.format(c)
     print(np.count_nonzero(coef[:, j]))
     print j
 
