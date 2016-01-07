@@ -23,12 +23,12 @@ from random import shuffle
 from random import seed
 import numpy as np
 from sklearn.metrics import confusion_matrix as cm
-# from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression as lg
 import csv
 from sklearn.decomposition import PCA
 # from sklearn.ensemble import AdaBoostClassifier as ADA
 import time
+from matplotlib import pyplot as plt
 
 start_time = time.time()
 __author__ = '2d Lt Kyle Palko'
@@ -54,6 +54,11 @@ full_path = 'Results/tt_full.csv'
 
 # create a noise variable
 do_noise = False
+
+# plot CV
+cv_plot = False
+if cv_plot:
+    num_runs = 1
 
 
 def tvt(x_data, y_data):
@@ -82,6 +87,15 @@ def tvt(x_data, y_data):
     tst_y = list2_shuf[val_size:]
     return trn_x, trn_y, val_x, val_y, tst_x, tst_y  # return the data
 
+def resid(y_pred, y_act):
+    res = y_pred - y_act #subtract predictions and actual to form residual
+    MSE = sum(np.square(res))/len(res)
+    return res, MSE
+
+def modResid(model, x_data, y_data):
+    y_pred = model.predict(x_data)
+    res, MSE = resid(y_pred, y_data)
+    return res, MSE
 
 class BeginClass():
 
@@ -145,7 +159,7 @@ if do_noise:
     X = stan.fit_transform(X)
 
 # build train test validate sets
-# seed(41)
+seed(44)
 j = 0
 coef = np.zeros((np.size(X, axis=1), num_runs))
 if do_pca:
@@ -167,11 +181,21 @@ while j < num_runs:
     lgc = BeginClass()
     lgc.lst()
 
-    for c in np.linspace(0.1, 2, 30):
+    # sr0 = np.zeros((10, 4))
+    # a = 0
+    for c in np.linspace(.0001, 4, 30):
         lgr = lg(penalty='l1', C=c)
     # for c in range(1, 100, 5):
     #     lgr = ADA(n_estimators=c)
         lgc.appen(model=lgr, param=c, trnx=trn_x, trny=trn_y, valx=val_x, valy=val_y)
+    ############
+        # # Use for printing MSE figure for CV
+        # lgr.fit(trn_x, trn_y)
+        # sr0[a, 1] = modResid(lgr, trn_x, trn_y)[1] #returns the MSE
+        # sr0[a, 2] = modResid(lgr, val_x, val_y)[1]
+        # sr0[a, 3] = modResid(lgr, tst_x, tst_y)[1]
+        # sr0[a, 0] = c
+        # a += 1
 
     lgc.locate()
     c = lgc.param[lgc.plac]
@@ -190,6 +214,18 @@ while j < num_runs:
     print j
 
     j += 1
+
+    # if cv_plot:
+    #     fig = plt.figure()
+    #     plt.plot(sr0[:, 0], sr0[:, 1], c='r', label='Training MSE')
+    #     plt.plot(sr0[:, 0], sr0[:, 2], c='g', label='Validation MSE')
+    #     plt.plot(sr0[:, 0], sr0[:, 3], c='b', label='Testing MSE')
+    #     plt.legend(loc='lower right')
+    #     fig.title('Cross Validation Results')
+    #     plt.xlabel('Parameter (C)')
+    #     plt.ylabel('MSE')
+    #     plt.savefig('MSEPlot.png') #, bbox_inches = 'tight'
+    #     plt.close()
 
 if write_coef:
     for i in range(0, np.size(coef, axis=0)):
