@@ -22,3 +22,11 @@ fitobj = liso.backfit(trnx, trny, CVobj$optimlam)
 y_hat = fitobj*tstx  # gives the prediction. Need to find a cutoff value
 y_m = y_hat >= 0.5
 pred_acc = sum((y_m - tsty) == 0)/402  # prediction accuracy is only 52.23%
+
+DataRaw = read.csv("TT_prep_clean.csv")
+Yraw = DataRaw[,2]
+Xraw = DataRaw[,3:4562]
+X = as.matrix(Xraw)
+KeepColRaw = read.csv("tt_full.csv")
+KeepCol = as.vector(KeepColRaw[,1])
+Xred = X[,KeepCol]
