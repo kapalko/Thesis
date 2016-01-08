@@ -25,10 +25,9 @@ import numpy as np
 from sklearn.metrics import confusion_matrix as cm
 from sklearn.linear_model import LogisticRegression as lg
 import csv
-from sklearn.decomposition import PCA
 # from sklearn.ensemble import AdaBoostClassifier as ADA
 import time
-from matplotlib import pyplot as plt
+
 
 start_time = time.time()
 __author__ = '2d Lt Kyle Palko'
@@ -41,16 +40,28 @@ num_runs = 1000  # number of runs to perform the classifiers
 # Write results
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'TT_param'
+result_title = 'TT_sex'
 
 # PCA options
 do_pca = False
-n_pca = .9  # % of variance to keep
+if do_pca:
+    from sklearn.decomposition import PCA
+    n_pca = .9  # % of variance to keep
+    acc = np.zeros((num_runs, 4))
+else:
+    acc = np.zeros((num_runs, 3))
 
 # 2 degree factorial model with interactions
 # make sure you have lots of memory for this one
 do_full = False
-full_path = 'Results/tt_full.csv'
+if do_full:
+    full_path = 'Results/tt_full.csv'
+
+# include gender?
+do_sex = True
+if do_sex:
+    id_path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Data/ID_code.csv'
+    s_path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Data/sex.csv'
 
 # create a noise variable
 do_noise = False
@@ -59,6 +70,7 @@ do_noise = False
 cv_plot = False
 if cv_plot:
     num_runs = 1
+    from matplotlib import pyplot as plt
 
 
 def tvt(x_data, y_data):
@@ -124,9 +136,28 @@ data = np.genfromtxt(d_path, delimiter=',')
 # remove rows that have NaN values (not ideal)
 data = data[~np.isnan(data).any(axis=1)]  # from stack overflow: https://bit.ly/1QhfcmZ
 data = sorted(data, key=lambda x: x[0])
+
+if do_sex:
+    idlab = []
+    sex = []
+    with open(id_path, 'rb') as f:
+        spamreader = csv.reader(f, delimiter=',')
+        for row in spamreader:
+            idlab.append(row)
+    f.close()
+
+    s = np.genfromtxt(s_path, delimiter=',')
+    # find DX by matching the rows
+    for subid in (x[0] for x in data):
+        d = idlab.index(['{0}'.format(int(subid))])
+        sex.append(s[d]-1)
+
 Y = np.array([x[1]-1 for x in data])  # y values in the second column
 X = np.array([x[2:] for x in data])
+X = np.column_stack((X, sex))
 del data
+del idlab
+del sex
 
 if do_full:
     c = 0
@@ -159,13 +190,9 @@ if do_noise:
     X = stan.fit_transform(X)
 
 # build train test validate sets
-seed(44)
+seed(41)
 j = 0
 coef = np.zeros((np.size(X, axis=1), num_runs))
-if do_pca:
-    acc = np.zeros((num_runs, 4))
-else:
-    acc = np.zeros((num_runs, 3))
 
 while j < num_runs:
 
@@ -183,7 +210,7 @@ while j < num_runs:
 
     # sr0 = np.zeros((10, 4))
     # a = 0
-    for c in np.linspace(.0001, 4, 30):
+    for c in np.linspace(.0001, 4, 50):
         lgr = lg(penalty='l1', C=c)
     # for c in range(1, 100, 5):
     #     lgr = ADA(n_estimators=c)
