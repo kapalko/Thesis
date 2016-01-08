@@ -30,3 +30,11 @@ X = as.matrix(Xraw)
 KeepColRaw = read.csv("tt_full.csv")
 KeepCol = as.vector(KeepColRaw[,1])
 Xred = X[,KeepCol]
+
+shuffleind = sample(seq(1:dim(Xred)[1]))
+TrainInd = shuffleind[1:400]
+ValInd = shuffleind[401:600]
+TestInd = shuffleind[601:800]
+XTrain = Xred[TrainInd,]
+XVal = Xred[ValInd,]
+XTest = Xred[TestInd,]
