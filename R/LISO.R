@@ -1,4 +1,4 @@
-num_runs = 100
+num_runs = 10
 
 TT_prep_clean <- read.csv("/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/TT_prep_clean.csv", header=FALSE)
 KeepColRaw = read.csv("/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Results/tt_full.csv")
