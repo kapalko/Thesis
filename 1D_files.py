@@ -14,9 +14,10 @@ from nilearn import datasets
 __author__ = '2d Lt Kyle Palko'
 __version__ = 'v0.1'
 
-path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/C200'  # set where the data should be saved
+pipe = 'ccs'
+path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Test/tt'  # set where the data should be saved
 # path = '/home/kap/Thesis/Data/DL'
-pipe = 'tt'  # define the pipeline used to preprocess the data
+  # define the pipeline used to preprocess the data
 derivative = 'rois_tt'  # define what data should be pulled
 
 datasets.fetch_abide_pcp(data_dir=path, pipeline=pipe, band_pass_filtering=True, global_signal_regression=False,
@@ -25,13 +26,13 @@ datasets.fetch_abide_pcp(data_dir=path, pipeline=pipe, band_pass_filtering=True,
 # local variables and paths #
 path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/'  # working directory
 filt = 'filt_noglobal'
-stud = 'Test/ABIDE_pcp/{0}/{1}/'.format(pipe, filt)  # location that download happenedto
+stud = 'Test/tt/ABIDE_pcp/{0}/{1}/'.format(pipe, filt)  # location that download happened to
 # stud = '/ABIDE_pcp/{0}/{1}/'.format(pipe, filt)
 # stud = 'Data/'
 # lab = path + 'Label/'  # location of CSV files for labeling
-lab = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/C200/'
+lab = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Data/'
 # lab = '/home/kap/Thesis/Data/Label/'
-mask_name = 'cc200_prep'
+mask_name = 'tt_ccs_prep'
 
 # build two lists of strings from CSV files to use to match the subjects and their diagnosis
 idlab = []  # subject IDs

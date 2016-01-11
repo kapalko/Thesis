@@ -25,7 +25,6 @@ import numpy as np
 from sklearn.metrics import confusion_matrix as cm
 from sklearn.linear_model import LogisticRegression as lg
 import csv
-# from sklearn.ensemble import AdaBoostClassifier as ADA
 import time
 
 
@@ -33,14 +32,14 @@ start_time = time.time()
 __author__ = '2d Lt Kyle Palko'
 __version__ = 'v0.1.2'
 
-d_path = 'csv/TT_prep_cpac_filt_noglobal.csv'  # desktop
+d_path = 'csv/tt_prep_cpac_nofilt_global.csv'  # desktop
 # d_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'
 num_runs = 1000  # number of runs to perform the classifiers
 
 # Write results
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'TT_sex'
+result_title = 'tt_sex_nofilt_global'
 
 # PCA options
 do_pca = False
@@ -71,6 +70,12 @@ cv_plot = False
 if cv_plot:
     num_runs = 1
     from matplotlib import pyplot as plt
+
+# try graphlab's feature extraction
+graph_lab = False
+if graph_lab:
+    result_title = '{0}_gl'.format(result_title)
+
 
 
 def tvt(x_data, y_data):
@@ -154,10 +159,11 @@ if do_sex:
 
 Y = np.array([x[1]-1 for x in data])  # y values in the second column
 X = np.array([x[2:] for x in data])
-X = np.column_stack((X, sex))
 del data
-del idlab
-del sex
+if do_sex:
+    X = np.column_stack((X, sex))
+    del idlab
+    del sex
 
 if do_full:
     c = 0
