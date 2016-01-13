@@ -1,6 +1,6 @@
-num_runs = 10
+num_runs = 100
 
-TT_prep_clean <- read.csv("/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/TT_prep_clean.csv", header=FALSE)
+TT_prep_clean <- read.csv("/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/TT/TT_prep_clean.csv", header=FALSE)
 KeepColRaw = read.csv("/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Results/tt_full.csv")
 
 y <- TT_prep_clean[, 2]
@@ -20,21 +20,26 @@ res = matrix(nrow = num_runs, ncol = 2)
 for(i in seq(1:num_runs)){
   sz = dim(Xred)[1]  # 805
   shuffleind = sample(seq(1:sz))
-  TrainInd = shuffleind[1:500]
-  TestInd = shuffleind[501:805]
+  TrainInd = shuffleind[1:450]
+  TestInd = shuffleind[451:805]
   trnx = Xred[TrainInd,]
   trny = y[TrainInd]
   tstx = Xred[TestInd,]
   tsty = y[TestInd]
-  
+ 
   CVobj <- cv.liso(trnx, trny)
   fitobj = liso.backfit(trnx, trny, CVobj$optimlam)
   
+  y_hat = fitobj*valx
+  res[i, 1] = CVobj$optimlam
+  
   y_hat = fitobj*tstx  # gives the prediction. Need to find a cutoff value
   y_m = y_hat >= 0.5
-  pred_acc = sum((y_m - tsty) == 0)/305  # prediction accuracy is only 52.23%
-  res[i, 1] = CVobj$optimlam
+  pred_acc = sum((y_m - tsty) == 0)/length(tsty)
   res[i, 2] = pred_acc
+  cat("Run: ", i, '\n')
+  cat("Accuracy: ", pred_acc)
+  
 }
 
 # write to CSV

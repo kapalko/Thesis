@@ -32,14 +32,14 @@ start_time = time.time()
 __author__ = '2d Lt Kyle Palko'
 __version__ = 'v0.1.2'
 
-d_path = 'csv/tt_prep_cpac_nofilt_global.csv'  # desktop
+d_path = 'csv/cc200_prep_cpac_filt_noglobal.csv'  # desktop
 # d_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'
 num_runs = 1000  # number of runs to perform the classifiers
 
 # Write results
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'tt_sex_nofilt_global'
+result_title = 'cc_sex_filt_noglobal'
 
 # PCA options
 do_pca = False
@@ -70,11 +70,6 @@ cv_plot = False
 if cv_plot:
     num_runs = 1
     from matplotlib import pyplot as plt
-
-# try graphlab's feature extraction
-graph_lab = False
-if graph_lab:
-    result_title = '{0}_gl'.format(result_title)
 
 
 
@@ -196,7 +191,7 @@ if do_noise:
     X = stan.fit_transform(X)
 
 # build train test validate sets
-seed(41)
+# seed(41)
 j = 0
 coef = np.zeros((np.size(X, axis=1), num_runs))
 
