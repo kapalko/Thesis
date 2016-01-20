@@ -52,5 +52,6 @@ import numpy as np
 correlation_matrix = np.corrcoef(time_series.T)
 plt.figure(figsize=(10, 10))
 plt.imshow(correlation_matrix, interpolation='nearest')
+
 plt.show()
 print('Completed Program')
