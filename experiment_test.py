@@ -23,10 +23,10 @@ from random import shuffle
 from random import seed
 import numpy as np
 from sklearn.metrics import confusion_matrix as cm
-# from sklearn.linear_model import LogisticRegression as lg
+from sklearn.linear_model import LogisticRegression as lg
 # from sklearn.svm import SVC as lg
 # from sklearn.ensemble import AdaBoostClassifier as ADA
-from sklearn.ensemble import RandomForestClassifier as ADA
+# from sklearn.ensemble import RandomForestClassifier as ADA
 import csv
 import time
 
@@ -37,15 +37,15 @@ __version__ = 'v0.1.2'
 
 d_path = 'csv/tt_prep_cpac_filt_noglobal.csv'  # desktop
 # d_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'
-num_runs = 100  # number of runs to perform the classifiers
+num_runs = 1000  # number of runs to perform the classifiers
 
 # Write results
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'tt_RF_pca_filt_noglobal'
+result_title = 'tt_sex_ageinclude_filt_noglobal'
 
 # PCA options
-do_pca = True
+do_pca = False
 if do_pca:
     from sklearn.decomposition import PCA
     n_pca = .9  # % of variance to keep
@@ -74,8 +74,12 @@ if cv_plot:
     num_runs = 1
     from matplotlib import pyplot as plt
 
-rbf = False
-
+# do an age restricted model
+do_age = True
+if do_age:
+    age_lim = 19
+    a_path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Data/age.csv'
+    del_a = False  # delete age from the data before running model
 
 
 def tvt(x_data, y_data):
@@ -142,9 +146,10 @@ data = np.genfromtxt(d_path, delimiter=',')
 data = data[~np.isnan(data).any(axis=1)]  # from stack overflow: https://bit.ly/1QhfcmZ
 data = sorted(data, key=lambda x: x[0])
 
-if do_sex:
+if do_sex or do_age:
     idlab = []
     sex = []
+    age = []
     with open(id_path, 'rb') as f:
         spamreader = csv.reader(f, delimiter=',')
         for row in spamreader:
@@ -152,18 +157,29 @@ if do_sex:
     f.close()
 
     s = np.genfromtxt(s_path, delimiter=',')
+    a = np.genfromtxt(a_path, delimiter=',')
     # find DX by matching the rows
     for subid in (x[0] for x in data):
         d = idlab.index(['{0}'.format(int(subid))])
         sex.append(s[d]-1)
+        age.append(a[d])
+
+if do_sex:
+    data = np.column_stack((data, sex))
+    del idlab
+    del sex
+    del s
+
+if do_age:
+    data = np.column_stack((data, age))
+    del age
+    del a
+    data = data[np.logical_not(data[:, -1] >= age_lim)]  # keep only those under age limit
+    if del_a: data = np.delete(data, np.s_[-1:], 1)
 
 Y = np.array([x[1]-1 for x in data])  # y values in the second column
 X = np.array([x[2:] for x in data])
 del data
-if do_sex:
-    X = np.column_stack((X, sex))
-    del idlab
-    del sex
 
 if do_full:
     c = 0
@@ -216,11 +232,11 @@ while j < num_runs:
 
     # sr0 = np.zeros((10, 4))
     # a = 0
-    # for c in np.linspace(.0001, 10, 50):
-    #     # lgr = lg(penalty='l1', C=c)
+    for c in np.linspace(.0001, 10, 50):
+        lgr = lg(penalty='l1', C=c)
     #     lgr = lg(C=c, kernel='linear')
-    for c in range(1, 100, 15):
-        lgr = ADA(n_estimators=c)
+    # for c in range(1, 100, 15):
+    #     lgr = ADA(n_estimators=c)
         lgc.appen(model=lgr, param=c, trnx=trn_x, trny=trn_y, valx=val_x, valy=val_y)
     ############
         # # Use for printing MSE figure for CV
@@ -233,20 +249,17 @@ while j < num_runs:
 
     lgc.locate()
     c = lgc.param[lgc.plac]
-    # # lgr = lg(penalty='l1', C=c)
+    lgr = lg(penalty='l1', C=c)
     # lgr = lg(C=c, kernel='linear')
-    lgr = ADA(n_estimators=c)
+    # lgr = ADA(n_estimators=c)
     lgc.update(lgr, trnx=trn_x, trny=trn_y, tstx=tst_x, tsty=tst_y)
 
-    if rbf:
-        coef[:np.size(lgr.coef_), j] = lgr.coef_
-        acc[j, 0] = lgc.acc
-        acc[j, 1] = np.count_nonzero(coef[:, j])
-        acc[j, 2] = c
-    else:
-        acc[j, 0] = lgc.acc
-        acc[j, 1] = 0
-        acc[j, 2] = c
+
+    coef[:np.size(lgr.coef_), j] = lgr.coef_
+    acc[j, 0] = lgc.acc
+    acc[j, 1] = np.count_nonzero(coef[:, j])
+    acc[j, 2] = c
+
 
     print 'Accuracy: {0}'.format(lgc.acc)
     print 'c={0}'.format(c)
