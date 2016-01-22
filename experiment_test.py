@@ -42,7 +42,7 @@ num_runs = 1000  # number of runs to perform the classifiers
 # Write results
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'tt_sex_ageinclude_filt_noglobal'
+result_title = 'tt_sex_adol_filt_noglobal'
 
 # PCA options
 do_pca = False
@@ -174,7 +174,8 @@ if do_age:
     data = np.column_stack((data, age))
     del age
     del a
-    data = data[np.logical_not(data[:, -1] >= age_lim)]  # keep only those under age limit
+    # data = data[np.logical_not(data[:, -1] >= age_lim)]  # keep only those under age limit
+    data = data[np.logical_not(np.logical_or(data[:, -1] >= age_lim, data[:, -1] < 12))]
     if del_a: data = np.delete(data, np.s_[-1:], 1)
 
 Y = np.array([x[1]-1 for x in data])  # y values in the second column
