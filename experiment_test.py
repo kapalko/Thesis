@@ -42,13 +42,13 @@ num_runs = 1000  # number of runs to perform the classifiers
 # Write results
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'tt_sex_adol_filt_noglobal'
+result_title = 'tt_sex_adol_pca75_filt_noglobal'
 
 # PCA options
-do_pca = False
+do_pca = True
 if do_pca:
     from sklearn.decomposition import PCA
-    n_pca = .9  # % of variance to keep
+    n_pca = .7  # % of variance to keep
     acc = np.zeros((num_runs, 4))
 else:
     acc = np.zeros((num_runs, 3))
@@ -79,7 +79,10 @@ do_age = True
 if do_age:
     age_lim = 19
     a_path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Data/age.csv'
-    del_a = False  # delete age from the data before running model
+    del_a = True # delete age from the data before running model
+    min_age = True
+    if min_age:
+        m_age = 12
 
 
 def tvt(x_data, y_data):
@@ -174,9 +177,11 @@ if do_age:
     data = np.column_stack((data, age))
     del age
     del a
-    # data = data[np.logical_not(data[:, -1] >= age_lim)]  # keep only those under age limit
-    data = data[np.logical_not(np.logical_or(data[:, -1] >= age_lim, data[:, -1] < 12))]
-    if del_a: data = np.delete(data, np.s_[-1:], 1)
+
+    if min_age: data = data[np.logical_not(np.logical_or(data[:, -1] >= age_lim, data[:, -1] < m_age))] # keep only those between age limits
+    else: data = data[np.logical_not(data[:, -1] >= age_lim)]  # keep only those under age limit
+
+    if del_a: data = np.delete(data, np.s_[-1:], 1)  # take age out of data
 
 Y = np.array([x[1]-1 for x in data])  # y values in the second column
 X = np.array([x[2:] for x in data])
