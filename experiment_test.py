@@ -42,13 +42,13 @@ num_runs = 1000  # number of runs to perform the classifiers
 # Write results
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'tt_sex_adol_pca75_filt_noglobal'
+result_title = 'tt_sex_pca75_filt_noglobal'
 
 # PCA options
 do_pca = True
 if do_pca:
     from sklearn.decomposition import PCA
-    n_pca = .7  # % of variance to keep
+    n_pca = .75  # % of variance to keep
     acc = np.zeros((num_runs, 4))
 else:
     acc = np.zeros((num_runs, 3))
@@ -75,7 +75,7 @@ if cv_plot:
     from matplotlib import pyplot as plt
 
 # do an age restricted model
-do_age = True
+do_age = False
 if do_age:
     age_lim = 19
     a_path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Data/age.csv'
@@ -159,13 +159,13 @@ if do_sex or do_age:
             idlab.append(row)
     f.close()
 
-    s = np.genfromtxt(s_path, delimiter=',')
-    a = np.genfromtxt(a_path, delimiter=',')
+    if do_sex: s = np.genfromtxt(s_path, delimiter=',')
+    if do_age: a = np.genfromtxt(a_path, delimiter=',')
     # find DX by matching the rows
     for subid in (x[0] for x in data):
         d = idlab.index(['{0}'.format(int(subid))])
-        sex.append(s[d]-1)
-        age.append(a[d])
+        if do_sex: sex.append(s[d]-1)
+        if do_age: age.append(a[d])
 
 if do_sex:
     data = np.column_stack((data, sex))
