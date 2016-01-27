@@ -42,13 +42,13 @@ num_runs = 1000  # number of runs to perform the classifiers
 # Write results
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'tt_sex_pca75_filt_noglobal'
+result_title = 'tt_sex_adol70_filt_noglobal'
 
 # PCA options
 do_pca = True
 if do_pca:
     from sklearn.decomposition import PCA
-    n_pca = .75  # % of variance to keep
+    n_pca = .70  # % of variance to keep
     acc = np.zeros((num_runs, 4))
 else:
     acc = np.zeros((num_runs, 3))
@@ -75,7 +75,7 @@ if cv_plot:
     from matplotlib import pyplot as plt
 
 # do an age restricted model
-do_age = False
+do_age = True
 if do_age:
     age_lim = 19
     a_path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Data/age.csv'
@@ -238,7 +238,7 @@ while j < num_runs:
 
     # sr0 = np.zeros((10, 4))
     # a = 0
-    for c in np.linspace(.0001, 10, 50):
+    for c in np.linspace(.0001, 5, 50):
         lgr = lg(penalty='l1', C=c)
     #     lgr = lg(C=c, kernel='linear')
     # for c in range(1, 100, 15):
