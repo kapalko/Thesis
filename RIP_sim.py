@@ -14,10 +14,10 @@ from matplotlib import pyplot as plt
 from sklearn.preprocessing import StandardScaler as ss
 
 # options
-test_runs = True
+test_runs = False
 
 # constants
-csv_path = 'csv/TT_prep_cpac_filt_noglobal.csv'  # desktop
+csv_path = 'csv/tt97_prep_cpac_filt_noglobal.csv'  # desktop
 # csv_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'  # laptop
 num_runs = 10000
 max_s = 100
@@ -76,9 +76,10 @@ plt.plot(d_quant[:b-2, 0], d_quant[:b-2, 1], c='r', label='.1 Quantile')
 plt.plot(d_quant[:b-2, 0], d_quant[:b-2, 2], c='g', label='.5 Quantile')
 plt.plot(d_quant[:b-2, 0], d_quant[:b-2, 3], c='b', label='.9 Quantile')
 plt.legend(loc='lower right')
-plt.xlabel('Num Beta')
+plt.xlabel('Number of Coefficients')
 plt.ylabel('delta')
-plt.title('RIP Simulations with Simulated Data')
-plt.savefig('test_plot.png')
+plt.title('RIP Simulations with TT Data')
+plt.axhline(y=1, linewidth=2, color='black')
+plt.savefig('ttrip.png')
 plt.close()
 print('End')

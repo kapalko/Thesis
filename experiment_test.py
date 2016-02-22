@@ -35,20 +35,22 @@ start_time = time.time()
 __author__ = '2d Lt Kyle Palko'
 __version__ = 'v0.1.2'
 
-d_path = 'csv/tt_prep_cpac_filt_noglobal.csv'  # desktop
+d_path = 'csv/cc200_prep_cpac_filt_noglobal.csv'  # desktop
 # d_path = '/home/kap/Thesis/Data/csv/dos160_prep_cpac_filt_noglobal.csv'
 num_runs = 1000  # number of runs to perform the classifiers
 
 # Write results
 write_coef = True  # whether or not to output the coefficients in a CSV file
 write_results = True
-result_title = 'tt_sex_adol70_filt_noglobal'
+result_title = 'cc200_age19_sex_noise_filt_noglobal'
+
+id_path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Data/ID_code.csv'
 
 # PCA options
-do_pca = True
+do_pca = False
 if do_pca:
     from sklearn.decomposition import PCA
-    n_pca = .70  # % of variance to keep
+    n_pca = .85  # % of variance to keep
     acc = np.zeros((num_runs, 4))
 else:
     acc = np.zeros((num_runs, 3))
@@ -66,7 +68,7 @@ if do_sex:
     s_path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Data/sex.csv'
 
 # create a noise variable
-do_noise = False
+do_noise = True
 
 # plot CV
 cv_plot = False
@@ -80,7 +82,7 @@ if do_age:
     age_lim = 19
     a_path = '/media/kap/8e22f6f8-c4df-4d97-a388-0adcae3ec1fb/Python/Thesis/Data/age.csv'
     del_a = True # delete age from the data before running model
-    min_age = True
+    min_age = False
     if min_age:
         m_age = 12
 
@@ -221,6 +223,7 @@ if do_noise:
 # seed(41)
 j = 0
 coef = np.zeros((np.size(X, axis=1), num_runs))
+print result_title
 
 while j < num_runs:
 
@@ -241,7 +244,7 @@ while j < num_runs:
     for c in np.linspace(.0001, 5, 50):
         lgr = lg(penalty='l1', C=c)
     #     lgr = lg(C=c, kernel='linear')
-    # for c in range(1, 100, 15):
+    # for c in [1000]:
     #     lgr = ADA(n_estimators=c)
         lgc.appen(model=lgr, param=c, trnx=trn_x, trny=trn_y, valx=val_x, valy=val_y)
     ############
